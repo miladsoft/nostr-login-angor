@@ -1,5 +1,5 @@
 {
-  "name": "nostr-login",
+  "name": "blockcore-nostr-login",
   "version": "1.0.4",
   "description": "",
   "main": "./dist/index.esm.js",
@@ -19,11 +19,11 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "nostr-login-components": "^1.0.3",
+    "blockcore-nostr-login-components": "^1.0.3",
     "prettier": "^3.2.2",
     "rollup": "^4.9.6",
     "rollup-plugin-typescript2": "^0.36.0"
   },
   "license": "MIT",
-  "gitHead": "3566fcea473cc3681b52bc8170f6a1de6d5b9ed1"
+  "gitHead": "f13e70ae0c74a21a79e3fbdee59eea3ef30b5f6f"
 }
