@@ -1,5 +1,5 @@
 {
-  "name": "blockcore-nostr-login-components",
+  "name": "miladsoft-nostr-login-components",
   "version": "1.0.3",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "blockcore-nostr-login",
+  "name": "miladsoft-nostr-login",
   "version": "1.0.4",
   "description": "",
   "main": "./dist/index.esm.js",
@@ -19,7 +19,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "blockcore-nostr-login-components": "^1.0.3",
+    "miladsoft-nostr-login-components": "^1.0.3",
     "prettier": "^3.2.2",
     "rollup": "^4.9.6",
     "rollup-plugin-typescript2": "^0.36.0"
