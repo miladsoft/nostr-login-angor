@@ -2,7 +2,7 @@
   "name": "nostr-login-workspace",
   "workspaces": {
     "packages": [
-      "packages/**"
+      "packages/auth"
     ]
   },
   "scripts": {
