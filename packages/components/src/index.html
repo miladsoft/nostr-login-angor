@@ -1,0 +1,315 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>Modal Auth Develop</title>
+    <style>
+      .nl-button {
+        margin-top: 100px;
+      }
+      div {
+        background: #9fc6db;
+      }
+    </style>
+    <script type="module">
+      import './build/components.esm.js';
+
+      // const initialModals = async opt => {
+      //   const bunkerUrl = await launch(opt);
+      //
+      //   console.log({ bunkerUrl });
+      // };
+      //
+      // initialModals({
+      //   theme: 'purple',
+      //   startScreen: 'signup',
+      // });
+      //
+      // const nlElements = document.getElementsByTagName('nl-button');
+      //
+      // for (let i = 0; i < nlElements.length; i++) {
+      //   const theme = nlElements[i].getAttribute('nl-theme');
+      //   const startScreen = nlElements[i].getAttribute('start-screen');
+      //
+      //   nlElements[i].addEventListener('click', function () {
+      //     initialModals({
+      //       theme,
+      //       startScreen,
+      //     });
+      //   });
+      // }
+      const listNotifies = [];
+
+      const banner = document.createElement('nl-banner');
+
+      const launch = opt => {
+        const dialog = document.createElement('dialog');
+        const modal = document.createElement('nl-auth');
+
+        // dialog.appendChild(modal);
+        document.body.appendChild(modal);
+
+        const startLoadingModal = document.getElementById('startloadingmodal');
+
+        startLoadingModal.addEventListener('click', () => {
+          modal.isLoading = true;
+        });
+
+        const setAuthUrl = document.getElementById('setauthurl');
+
+        setAuthUrl.addEventListener('click', () => {
+          modal.isLoading = false;
+          modal.authUrl = 'authUrl';
+        });
+
+        return new Promise(resolve => {
+          modal.addEventListener('handleGetValue', event => {
+            const inputValue = event.detail;
+
+            resolve(inputValue);
+          });
+
+          modal.addEventListener('handleCloseModal', event => {
+            dialog.close();
+            const inputValue = event.detail;
+
+            resolve(inputValue);
+          });
+
+          modal.addEventListener('handleRemoveWindowNostr', () => {
+            console.log('handleRemoveWindowNostr');
+          });
+
+          modal.addEventListener('nlLocalSignup', () => {
+            console.log('nlLocalSignup');
+
+            modal.isLoading = true;
+
+            setTimeout(() => {
+              modal.isLoading = false;
+            }, 2000);
+          });
+
+          modal.addEventListener('nlCloseModal', () => {
+            console.log('close modal');
+            modal.remove();
+          });
+
+          modal.addEventListener('nlChangeDarkMode', () => {
+            console.log('handleChangeDarkMode');
+            modal.darkMode = true;
+          });
+
+          modal.addEventListener('changeScreen', () => {
+            console.log('changeScreen');
+          });
+
+          modal.addEventListener('stopFetchHandler', () => {
+            modal.isLoading = false;
+            console.log('stopFetchHandler');
+            // FIXME reset the modal state, return to welcome screen
+          });
+
+          modal.addEventListener('handleContinue', () => {
+            modal.authUrl = '';
+          });
+
+          const recent = JSON.parse(localStorage.getItem('__nostrlogin_recent'));
+          const accounts = JSON.parse(localStorage.getItem('__nostrlogin_accounts'));
+
+          modal.accounts = accounts;
+          modal.recents = recent;
+
+          // dialog.showModal();
+          if (opt && opt.theme) {
+            modal.theme = opt.theme;
+          }
+
+          if (opt && opt.startScreen) {
+            modal.setAttribute('start-screen', opt.startScreen);
+          }
+
+          if (opt && opt.isSignInWithExtension !== undefined) {
+            modal.isSignInWithExtension = opt.isSignInWithExtension;
+          }
+        });
+      };
+
+      document.body.appendChild(banner);
+
+      const btnLogin = document.getElementById('login');
+
+      btnLogin.addEventListener('click', () => {
+        banner.userInfo = {
+          pubkey: 'b6129e5626f7b0abb85819b86db2f91fe51413e64146c7309134dd2e111d4948',
+          sk: 'e7ef8adcf038738245dfc14373872157f91a263c5b0c0985e72ea10f5d32cd1d',
+          relays: ['wss://relay.angor.io'],
+          token: '',
+          authMethod: 'local',
+          nip05: 'miladsoft@nsec.app',
+          picture:
+            'https://img.freepik.com/free-photo/the-adorable-illustration-of-kittens-playing-in-the-forest-generative-ai_260559-483.jpg?size=338&ext=jpg&ga=GA1.1.1413502914.1713830400&semt=ais',
+          name: 'milad',
+        };
+      });
+
+      banner.addEventListener('handleLogoutBanner', () => {
+        banner.userInfo = null;
+      });
+
+      banner.addEventListener('handleOpenWelcomeModal', () => {
+        const recent = JSON.parse(localStorage.getItem('__nostrlogin_recent'));
+        const accounts = JSON.parse(localStorage.getItem('__nostrlogin_accounts'));
+
+        let options = {
+          // theme: 'lemonade',
+          isSignInWithExtension: false,
+        };
+
+        if (Boolean(recent?.length) || Boolean(accounts?.length)) {
+          options = { ...options, startScreen: 'switch-account' };
+        }
+
+        console.log({ options });
+        launch(options);
+      });
+
+      banner.addEventListener('handleConfirmLogout', () => {
+        let options = {
+          startScreen: 'confirm-logout',
+        };
+
+        launch(options);
+      });
+
+      banner.addEventListener('handleBackUpModal', () => {
+        let options = {
+          startScreen: 'backup-flow',
+        };
+
+        launch(options);
+      });
+
+      banner.addEventListener('handleSetConfirmBanner', event => {
+        listNotifies.push(event.detail);
+
+        banner.listNotifies = listNotifies;
+      });
+
+      banner.addEventListener('handleRetryConfirmBanner', () => {
+        listNotifies.pop();
+
+        banner.listNotifies = listNotifies;
+      });
+
+      banner.addEventListener('handleNotifyConfirmBanner', () => {
+        console.log('handleNotifyConfirmBanner');
+      });
+
+      const startLoading = document.getElementById('startloading');
+      const stopLoading = document.getElementById('stoploading');
+      const notify = document.getElementById('notify');
+
+      startLoading.addEventListener('click', () => {
+        banner.isLoading = true;
+      });
+
+      stopLoading.addEventListener('click', () => {
+        banner.isLoading = false;
+      });
+
+      notify.addEventListener('click', () => {
+        banner.notify = {
+          confirm: Date.now(),
+          url: 'test.html',
+          // timeOut: { link: 'link.test' },
+        };
+      });
+
+      const testBtn = document.createElement('nl-button');
+
+      document.body.appendChild(testBtn);
+
+      setTimeout(() => {
+        testBtn.titleBtn = 'test text 1111111';
+        setTimeout(() => {
+          testBtn.nlTheme = 'purple';
+        }, 2000);
+      }, 2000);
+
+      const addAccounts = document.getElementById('add-accounts');
+
+      addAccounts.addEventListener('click', () => {
+        localStorage.setItem(
+          '__nostrlogin_accounts',
+          JSON.stringify([
+            {
+              pubkey: 'b6129e5626f7b0abb85819b86db2f91fe51413e64146c7309134dd2e111d4948',
+              sk: 'e7ef8adcf038738245dfc14373872157f91a263c5b0c0985e72ea10f5d32cd1d',
+              relays: ['wss://relay.nsec.app'],
+              token: '',
+              authMethod: 'local',
+              nip05: 'miladsoft@nsec.app',
+              picture:
+                'https://img.freepik.com/free-photo/the-adorable-illustration-of-kittens-playing-in-the-forest-generative-ai_260559-483.jpg?size=338&ext=jpg&ga=GA1.1.1413502914.1713830400&semt=ais',
+              name: 'milad',
+            },
+            {
+              pubkey: '03eb6c27a82f5aff10aa143f7c16bfc7956b03301b6d23a87c9709a3738878fd',
+              sk: 'e98af98f7bfa062be0357372739d5fd47f243e84611a40e7f941eb492788c477',
+              relays: ['wss://relay.nsec.app'],
+              token: '',
+              authMethod: 'connect',
+              nip05: 'testlongnameforbanner@nsec.app',
+              name: 'testlongnameforbanner',
+            },
+          ]),
+        );
+      });
+
+      const addRecent = document.getElementById('add-recent');
+
+      addRecent.addEventListener('click', () => {
+        localStorage.setItem(
+          '__nostrlogin_recent',
+          JSON.stringify([
+            {
+              pubkey: 'b6129e5626f7b0abb85819b86db2f91fe51413e64146c7309134dd2e111d4948',
+              authMethod: 'readOnly',
+              picture:
+                'https://img.freepik.com/free-photo/the-adorable-illustration-of-kittens-playing-in-the-forest-generative-ai_260559-483.jpg?size=338&ext=jpg&ga=GA1.1.1413502914.1713830400&semt=ais',
+              name: 'milad',
+            },
+          ]),
+        );
+      });
+    </script>
+  </head>
+  <body class="dark">
+    <button id="login">login</button>
+    <button id="startloading">start loading</button>
+    <button id="stoploading">stop loading</button>
+    <button id="notify">notify</button>
+
+    <button id="add-accounts">add __nostrlogin_accounts</button>
+    <button id="add-recent">add __nostrlogin_recent</button>
+
+    <div style="position: fixed; z-index: 9999">
+      <button id="startloadingmodal">start loading modal</button>
+      <button id="setauthurl">nostr login auth url</button>
+    </div>
+    <!--    <nl-banner></nl-banner>-->
+    <!--  <nl-button title-btn="Sign up" start-screen="signup"></nl-button>-->
+    <!--    <nl-button nl-theme="ocean"></nl-button>-->
+    <!--    <button-base nl-theme="ocean">-->
+    <!--      <svg slot="icon-start" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">-->
+    <!--        <path-->
+    <!--          stroke-linecap="round"-->
+    <!--          stroke-linejoin="round"-->
+    <!--          d="M3 8.25V18a2.25 2.25 0 0 0 2.25 2.25h13.5A2.25 2.25 0 0 0 21 18V8.25m-18 0V6a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 6v2.25m-18 0h18M5.25 6h.008v.008H5.25V6ZM7.5 6h.008v.008H7.5V6Zm2.25 0h.008v.008H9.75V6Z"-->
+    <!--        />-->
+    <!--      </svg>-->
+    <!--    </button-base>-->
+  </body>
+</html>
